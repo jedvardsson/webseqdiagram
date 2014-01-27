@@ -1,14 +1,16 @@
 #!/bin/bash
 
 PROG=$(basename $0)
+GENERATOR_URL="https://www.websequencediagrams.com/index.php"
+
 
 showhelp() {
 cat <<EOF
 Generates a PNG file from the given input_file using WebSequenceDiagram.
 
-Usage: $PROG [options] input_file
+Usage: $PROG [options] input_file [output_file]
 
-    -d|--dir            target dir
+    -d|--dir            target dir of output_file
     -s|--style          diagram style, default "rose".
     -f|--format         output file format, default "png".
 
@@ -17,9 +19,9 @@ EOF
     exit;
 }
 
-dir='.'
-style='rose'
-format='png'
+def_dir='.'
+def_style='rose'
+def_format='png'
 for i
 do
     case $1 in
@@ -32,14 +34,24 @@ do
     esac
 done
 
-if [ $# -ne 1 ]; then
-    showhelp;
+if [ $# -lt 1 ]; then
+    echo "Missing input file."
     exit 1;
 fi
+input_file=$1
+shift
 
-GENERATOR_URL="https://www.websequencediagrams.com/index.php"
-source_file=$1
-dest_file=$dir/${source_file%.*}.$format
+dir=${dir:-$def_dir}
+style=${style:-$def_style}
+
+if [ $# -lt 1 ]; then
+    format=${format:-$def_format}
+    output_file=$dir/${input_file%.*}.$format
+else
+    output_file=$dir/$1
+    format=${output_file##*.}   # get extension of file
+fi
+shift
 
 result=$(curl -sS -k "$GENERATOR_URL" \
     --data-urlencode "style=$style" \
@@ -49,7 +61,7 @@ result=$(curl -sS -k "$GENERATOR_URL" \
     --data-urlencode "landscape=0" \
     --data-urlencode "format=$format" \
     --data-urlencode "apiVersion=1" \
-    --data-urlencode "message@$source_file")
+    --data-urlencode "message@$input_file")
 
 echo $result
 if echo $result |grep -Pqv '"errors": \[\]'; then
@@ -65,4 +77,4 @@ if [ -z $web_file ]; then
 	exit 1
 fi
 
-wget --no-check-certificate "$GENERATOR_URL$web_file" -O $dest_file
+wget --no-check-certificate "$GENERATOR_URL$web_file" -O $output_file
