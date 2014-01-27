@@ -4,16 +4,22 @@ This is a Bash script to generate sequence diagrams using the WebSequenceDiagram
 	
 	$ git clone https://github.com/jedvardsson/webseqdiagram.git
 	$ cd webseqdiagram
-	$ ./INSTALL.sh
+	$ ./INSTALL.sh	
 
 # Usage
 
-	Usage: webseqdiagram.sh style input_file
+	Usage: $PROG [options] input_file [output_file]
 
-	    -d          target dir
+	    -d|--dir            target dir of output_file
+	    -s|--style          diagram style, default "rose".
+	    -f|--format         output file format, default "png".
 
-		style		the web sequence diagram style parameter (e.g. rose)
-		input_file	the sequence diagram input file
+		input_file	        the sequence diagram input file
 
-		webseqdiagram.sh rose myfile.wsd 
+	Examples:
 
+	    # Generate an SVG file
+	    webseqdiagram.sh mydiagram.wsd mydiagram.svg
+
+	    # Generate a PNG file using napkin style
+	    webseqdiagram.sh -s napkin mydiagram.wsd

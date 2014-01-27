@@ -6,7 +6,7 @@ GENERATOR_URL="https://www.websequencediagrams.com/index.php"
 
 showhelp() {
 cat <<EOF
-Generates a PNG file from the given input_file using WebSequenceDiagram.
+Generates an image file from the given WebSequenceDiagram input-file.
 
 Usage: $PROG [options] input_file [output_file]
 
@@ -15,6 +15,14 @@ Usage: $PROG [options] input_file [output_file]
     -f|--format         output file format, default "png".
 
 	input_file	        the sequence diagram input file
+
+Examples:
+
+    # Generate an SVG file
+    webseqdiagram.sh mydiagram.wsd mydiagram.svg
+
+    # Generate a PNG file using napkin style
+    webseqdiagram.sh -s napkin mydiagram.wsd
 EOF
     exit;
 }
