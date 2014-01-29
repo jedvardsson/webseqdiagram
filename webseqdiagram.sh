@@ -27,14 +27,15 @@ EOF
     exit;
 }
 
-def_dir='.'
 def_style='rose'
 def_format='png'
 for i
 do
     case $1 in
         -h|--help) showhelp; exit 0;;
-        -d|--dir) dir=$2; shift 2;;
+        -d|--dir) 
+            dir="${2%/}/" # Make sure trailing slash
+            shift 2;; 
         -f|--format) format=$2; shift 2;;
         -s|--style) style=$2; shift 2;;
         -*) echo "Unknown option: $1"; exit 1;;
@@ -49,17 +50,24 @@ fi
 input_file=$1
 shift
 
-dir=${dir:-$def_dir}
 style=${style:-$def_style}
 
 if [ $# -lt 1 ]; then
     format=${format:-$def_format}
-    output_file=$dir/${input_file%.*}.$format
+    output_file=${input_file%.*}.$format
 else
-    output_file=$dir/$1
+    output_file=$1
     format=${output_file##*.}   # get extension of file
 fi
 shift
+
+# Append dir if set and output file not absolute
+if [ -n "$dir" ]; then
+    case $output_file in
+        /*) ;;
+        *) output_file="$dir$output_file";;
+    esac
+fi
 
 result=$(curl -sS -k "$GENERATOR_URL" \
     --data-urlencode "style=$style" \
