@@ -80,7 +80,7 @@ result=$(curl -sS -k "$GENERATOR_URL" \
     --data-urlencode "message@$input_file")
 
 echo $result
-if echo $result |grep -Pqv '"errors": \[\]'; then
+if echo $result |grep -qv '"errors": \[\]'; then
     echo "There were errors:"
     echo $result
     exit 1
