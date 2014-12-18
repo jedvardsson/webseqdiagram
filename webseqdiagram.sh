@@ -13,6 +13,7 @@ Usage: $PROG [options] input_file [output_file]
     -d|--dir            target dir of output_file
     -s|--style          diagram style, default "rose".
     -f|--format         output file format, default "png".
+    --debug             debug output.
 
 	input_file	        the sequence diagram input file
 
@@ -27,8 +28,14 @@ EOF
     exit;
 }
 
+function debug() {
+    [ -n "$debug" ] && echo "$@"
+}
+
+
 def_style='rose'
 def_format='png'
+
 for i
 do
     case $1 in
@@ -38,6 +45,7 @@ do
             shift 2;; 
         -f|--format) format=$2; shift 2;;
         -s|--style) style=$2; shift 2;;
+        --debug) debug=1; shift;;
         -*) echo "Unknown option: $1"; exit 1;;
         *) break;;
     esac
@@ -79,7 +87,7 @@ result=$(curl -sS -k "$GENERATOR_URL" \
     --data-urlencode "apiVersion=1" \
     --data-urlencode "message@$input_file")
 
-echo $result
+debug $result
 if echo $result |grep -qv '"errors": \[\]'; then
     echo "There were errors:"
     echo $result
@@ -94,4 +102,10 @@ if [ -z $web_file ]; then
 	exit 1
 fi
 
-wget --no-check-certificate "$GENERATOR_URL$web_file" -O $output_file
+if wgeta -h > /dev/null 2>&1 ; then
+    wget --no-check-certificate "$GENERATOR_URL$web_file" -O $output_file
+elif curl -h > /dev/null 2>&1 ; then
+    curl -k -# "$GENERATOR_URL$web_file" > $output_file
+else
+    echo "Needs curl or wget to automatically download image: $GENERATOR_URL$web_file"
+fi
