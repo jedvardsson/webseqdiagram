@@ -102,7 +102,7 @@ if [ -z $web_file ]; then
 	exit 1
 fi
 
-if wgeta -h > /dev/null 2>&1 ; then
+if wget-h > /dev/null 2>&1 ; then
     wget --no-check-certificate "$GENERATOR_URL$web_file" -O $output_file
 elif curl -h > /dev/null 2>&1 ; then
     curl -k -# "$GENERATOR_URL$web_file" > $output_file
