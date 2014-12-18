@@ -86,7 +86,8 @@ if echo $result |grep -qv '"errors": \[\]'; then
     exit 1
 fi
 
-web_file=$(echo $result | grep -o "\?$format=[a-zA-Z0-9]*")
+# Not using grep -o to be compatible with old grep version in git bash
+web_file=$(echo $result | tr -d '\n\r' | sed -r 's/^.*(\?png=[a-zA-Z0-9]*).*/\1/')
 
 if [ -z $web_file ]; then
 	echo "Could find resulting file: $result"
